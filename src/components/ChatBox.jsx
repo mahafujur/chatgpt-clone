@@ -2,16 +2,12 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import Message from './Message';
 import { ChatContext } from '../context/chatContext';
 import Loading from './Loading.jsx';
-import { replaceProfanities } from 'no-profanity';
 import { davinci } from '../utils/davinci';
-import { dalle } from '../utils/dalle';
 import Modal from './Modal';
 import OpenApiKeyInput from './OpenApiKeyInput.jsx';
 import {readFromLocalStorage} from "../utils/localStorage.js";
 import {LOCAL_STORAGE} from "../utils/constant.js";
 
-const options = ['ChatGPT'];
-const gptModel = ['gpt-3.5'];
 const demoItems = [
   {
     title: 'Write a text',
@@ -31,14 +27,16 @@ const demoItems = [
   },
 ];
 
+
+
 const ChatBox = () => {
   const messagesEndRef = useRef();
+  const [messages, addMessage] = useContext(ChatContext);
   const inputRef = useRef();
   const [formValue, setFormValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(options[0]);
-  const [gpt, setGpt] = useState(gptModel[0]);
-  const [messages, addMessage] = useContext(ChatContext);
+  const [gpt, setGpt] = useState('gpt-3.5');
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const scrollToBottom = () => {
@@ -67,25 +65,19 @@ const ChatBox = () => {
       return;
     }
 
-    const cleanPrompt = replaceProfanities(formValue);
+    const cleanPrompt = formValue;
 
     const newMsg = cleanPrompt;
-    const aiModel = selected;
+    const aiModel = 'ChatGPT';
     const gptVersion = gpt;
 
     setLoading(true);
     setFormValue('');
     updateMessage(newMsg, false, aiModel);
     try {
-      if (aiModel === options[0]) {
         const LLMresponse = await davinci(cleanPrompt, key, gptVersion);
-        //const data = response.data.choices[0].message.content;
         LLMresponse && updateMessage(LLMresponse, true, aiModel);
-      } else {
-        const response = await dalle(cleanPrompt, key);
-        const data = response.data.data[0].url;
-        data && updateMessage(data, true, aiModel);
-      }
+
     } catch (err) {
       window.alert(`Error: ${err} please try again later`);
     }
@@ -112,7 +104,6 @@ const ChatBox = () => {
     <main className='relative flex flex-col h-screen py-2 overflow-hidden dark:bg-light-grey px-2'>
       <div className=' py-2 bg-white px-2 w-fit hover:bg-gray-100 rounded cursor-pointer'>
         <a
-          onClick={() => setGpt(gptModel[0])}
           className={`flex `}>
          Chat GPT 3.5
         </a>

@@ -63,7 +63,7 @@ const LeftMenu = () => {
                 </li>
             </ul>
 
-            {hasOpenApiKey ? null : <ul className='absolute bottom-0 w-full gap-1 menu rounded-box'>
+            {hasOpenApiKey ? null : <ul className='absolute bottom-0 mb-16 w-full gap-1 menu rounded-box'>
                 <li>
                     <a onClick={() => setModalOpen(true)}>
                         <MdOutlineVpnKey size={15}/>
